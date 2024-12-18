@@ -1,20 +1,27 @@
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer
-import av
+import cv2
 
-# Function to process video frames
-def video_frame_callback(frame):
-    img = frame.to_ndarray(format="bgr24")  # Convert to a NumPy array (BGR format)
-    # Process the frame if needed (e.g., apply filters or draw overlays)
-    return av.VideoFrame.from_ndarray(img, format="bgr24")
+# Title of the app
+st.title("Webcam Stream Example")
 
-# Streamlit app layout
-st.title("WebRTC Video Stream")
-st.write("This is a real-time video stream example using WebRTC.")
+# Open the webcam
+cap = cv2.VideoCapture(0)
 
-# Initialize WebRTC streamer
-webrtc_streamer(
-    key="example",
-    video_frame_callback=video_frame_callback,
-    media_stream_constraints={"video": True, "audio": False},
-)
+if not cap.isOpened():
+    st.error("Could not open webcam.")
+else:
+    # Start the webcam feed
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            st.error("Failed to grab frame.")
+            break
+        
+        # Convert the frame from BGR to RGB (OpenCV uses BGR)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
+        # Display the frame in the Streamlit app
+        st.image(frame_rgb, channels="RGB", use_column_width=True)
+
+    # Release the webcam when done
+    cap.release()

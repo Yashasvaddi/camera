@@ -1,3 +1,3 @@
 import streamlit as st
 
-st.Title("Camera Module Testing")
+st.title("Camera Module Testing")
